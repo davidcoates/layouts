@@ -4,6 +4,29 @@ A 38-key, split, ortholinear, columnar keyboard with a dedicated palm key per
 hand (its own row and column in the matrix). Hardware source lives in
 `hardware/shannon` (ergogen + KiCad) in the parent repo.
 
+## Building
+
+Each hand gets its own firmware, as the `left/` and `right/` revisions:
+
+    ./build shannon-left     # bin/shannon_left_davidcoates.uf2
+    ./flash shannon-right
+
+The revisions differ only in `SERIAL_USART_TX_PIN`. TRRS ring 2 is wired to
+pad P21 on both boards, but flipping the MCU to mirror the right hand maps
+that pad to GP29 on the left and GP2 on the right (`P2 <-> P21` in the swap
+table below), and QMK has no per-hand serial pin -- `split.matrix_pins.right`
+covers the matrix only, and the serial pin is a compile-time constant that
+also reaches assembly sources via `config.h`, so it can't be selected at
+runtime from `is_keyboard_left()`.
+
+`rules.mk` sets `SERIAL_DRIVER = vendor` (RP2040's PIO driver). The default
+bitbang driver needs ChibiOS PAL callbacks this board doesn't enable, and
+fails to compile.
+
+Since the board is defined in this userspace rather than in qmk_firmware --
+which at the pinned commit only finds keyboards under `qmk_firmware/keyboards`
+-- `util.sh` bind-mounts it into the firmware tree for the build.
+
 Controller: Pro Micro RP2040 (nice!nano-footprint), via `ceoloide/mcu_nice_nano`
 reversible footprint on a single PCB design shared by both hands (one is
 populated with the MCU flipped to the opposite face to mirror the layout).

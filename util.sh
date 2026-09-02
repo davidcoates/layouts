@@ -10,6 +10,7 @@ mkdir -p bin
 keymap_source=${1%/}
 keymap_name="davidcoates"
 userspace_dir="$(pwd)"
+extra_mounts=()
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/keyboards"
 
 firmware_path="$cache_dir/qmk"
@@ -25,6 +26,15 @@ elif [ "$keymap_source" == "planck" ]; then
 
   keyboard_name="zsa/planck_ez/glow"
   firmware_target="zsa_planck_ez_glow_$keymap_name.bin"
+
+elif [ "$keymap_source" == "shannon-left" ] || [ "$keymap_source" == "shannon-right" ]; then
+
+  # One revision per hand; they differ only in the split data pin.
+  hand="${keymap_source#shannon-}"
+  keyboard_name="shannon/$hand"
+  firmware_target="shannon_${hand}_$keymap_name.uf2"
+  # QMK only finds keyboards under qmk_firmware/keyboards, not the userspace.
+  extra_mounts=(-v "$userspace_dir/keyboards/shannon":/qmk_firmware/keyboards/shannon:z)
 
 else
   echo "Unrecognized keymap: $keymap_source"
@@ -43,6 +53,7 @@ function ensure_firmware {
 function docker_make {
   docker run --rm \
     "$@" \
+    ${extra_mounts[@]+"${extra_mounts[@]}"} \
     -w /qmk_firmware \
     -v "$firmware_path":/qmk_firmware:z \
     -v "$userspace_dir":/qmk_userspace:z \

@@ -1,4 +1,4 @@
-# Cogent -- 38 keys, split, ortholinear.
+# Shannon -- 38 keys, split, ortholinear.
 #
 #  X X X X X        top
 #  X X X X X        home
@@ -226,7 +226,7 @@ pcbs:
   # filter.js). The `-/^mirror_/` name filter is what keeps this to one board.
   # The points zone still mirrors, so the preview and outlines.right keep
   # showing the whole keyboard.
-  cogent:
+  shannon:
     template: kicad8
     outlines:
       board: {outline: board}

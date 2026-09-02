@@ -19,7 +19,7 @@ const uint32_t unicode_map[] PROGMEM = {
   [EN_DASH]   = 0x2013, // –
 };
 
-enum cogent_layers {
+enum shannon_layers {
   _BASE,
   _SYMBOL,
   _NUMPAD,

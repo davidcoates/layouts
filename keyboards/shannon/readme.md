@@ -1,8 +1,8 @@
-# cogent
+# shannon
 
 A 38-key, split, ortholinear, columnar keyboard with a dedicated palm key per
 hand (its own row and column in the matrix). Hardware source lives in
-`hardware/cogent` (ergogen + KiCad) in the parent repo.
+`hardware/shannon` (ergogen + KiCad) in the parent repo.
 
 Controller: Pro Micro RP2040 (nice!nano-footprint), via `ceoloide/mcu_nice_nano`
 reversible footprint on a single PCB design shared by both hands (one is

@@ -264,7 +264,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "cogent.kicad_pro",
+    "filename": "shannon.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -313,8 +313,8 @@
     "legacy_lib_list": [],
     "top_level_sheets": [
       {
-        "filename": "cogent.kicad_sch",
-        "name": "cogent",
+        "filename": "shannon.kicad_sch",
+        "name": "shannon",
         "uuid": "00000000-0000-0000-0000-000000000000"
       }
     ]

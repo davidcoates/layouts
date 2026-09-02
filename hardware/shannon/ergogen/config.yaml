@@ -154,7 +154,7 @@ outlines:
         - {ref: thumb_inner,         shift: [board_half, thumb_notch_board_dy]}
         - {ref: thumb_inner,         shift: [board_half, cap_half]}
         - {ref: thumb_inner,         shift: [board_half, -board_half]}
-        - {ref: thumb_outer,         shift: [-board_half, -board_half]}
+        - {ref: palm,                shift: [palm_board_half, -(palm_dy+thumb_dy)]}
         - {ref: palm,                shift: [palm_board_half, -board_half]}
         - {ref: palm,                shift: [-palm_board_half, -board_half]}
         - {ref: palm,                shift: [-palm_board_half, cap_half]}
@@ -279,5 +279,6 @@ pcbs:
         adjust: {shift: [0, -4.7], rotate: 180}
         params:
           reversible: true
+          include_traces_vias: true
           from: "{{colrow}}"
           to: "{{row_net}}"

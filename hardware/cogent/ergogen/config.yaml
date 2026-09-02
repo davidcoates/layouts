@@ -1,0 +1,283 @@
+# Cogent -- 38 keys, split, ortholinear.
+#
+#  X X X X X        top
+#  X X X X X        home
+#  X X X X X        bottom
+#  P   T T T        hand     P = palm key, T = thumb
+#
+
+meta:
+  engine: 4.1.0
+
+units:
+  # tunable parameters
+  case_margin: 7
+  board_margin: 1
+  board_fillet: 0
+  case_fillet: 3
+  theta: 15
+
+  screw_hole_radius: 1.1
+  screw_hole_inset: 3.5
+
+  thumb_dx: 0.5U
+  thumb_dy: -3
+  palm_dy: -U + 0.25U
+
+  mirror_distance: 5U
+
+  mcu_palm_gap: 1
+  trrs_thumb_gap: 1
+
+  mcu_width: 18
+  mcu_length: 33
+  mcu_face: 1
+
+  trrs_length: 12
+  trrs_width: 6
+  trrs_face: 2
+
+  cos_theta: cos(theta * pi / 180)
+  sin_theta: sin(theta * pi / 180)
+  tan_theta: tan(theta * pi / 180)
+
+  sin_2theta: sin(2 * theta * pi / 180)
+  cos_2theta: cos(2 * theta * pi / 180)
+  tan_2theta: tan(2 * theta * pi / 180)
+
+  cap_half: (U - 1) / 2
+  board_half: cap_half + board_margin # key centre -> board edge
+  case_half: cap_half + case_margin   # key centre -> case edge
+
+  palm_width: 1.5U
+  palm_overhang: palm_width - U
+  palm_cap_half: cap_half + palm_overhang / 2
+  palm_board_half: palm_cap_half + board_margin
+  palm_case_half: palm_cap_half + case_margin
+
+  palm_dx: -(tan_theta * (3U + board_half - palm_dy) + board_half - palm_board_half / cos_theta)
+
+  thumb_notch: trrs_thumb_gap + trrs_length
+
+  trrs_dx: cap_half - (trrs_width / 2)
+  trrs_dy: cap_half + thumb_notch
+
+  mcu_dx: -(palm_cap_half - mcu_length/2) - case_margin + mcu_face
+  mcu_dy: cap_half + mcu_palm_gap + (mcu_width / 2)
+
+  thumb_notch_board_dy: cap_half + thumb_notch
+  thumb_notch_case_dy: cap_half + thumb_notch + trrs_face
+
+  thumb_notch_board_dx: board_half + ((2U + board_half) * (1 - cos_theta) - thumb_dx - thumb_notch_board_dy * sin_theta) / cos_theta
+  thumb_notch_case_dx: case_half + ((2U + case_half) * (1 - cos_theta) - thumb_dx - thumb_notch_case_dy * sin_theta) / cos_theta
+
+
+points:
+  zones:
+    matrix:
+      anchor.shift: [80, -100]
+      key:
+        spread: U
+        padding: U
+      mirror:
+        ref: matrix_inner_bottom
+        distance: mirror_distance
+      columns:
+        pinky:
+          rows:
+            hand: # pivot for the palm zone / outline; not a real key (see palm)
+              width: palm_width
+              tags: [thumb_ref]
+              adjust:
+                shift: [palm_dx, palm_dy]
+                rotate: 0
+          key: {column_net: P8}
+        ring:
+          rows:
+            hand: {skip: true} # the air beside the palm key
+          key: {column_net: P9}
+        middle:
+          rows:
+            hand: {tags: [thumb_ref]} # pivot for thumb; not a real key (see thumb_outer)
+          key: {column_net: P16}
+        index:
+          rows:
+            hand: {skip: true} # see thumb_center
+          key: {column_net: P14}
+        inner:
+          rows:
+            hand: {skip: true} # see thumb_inner
+          key: {column_net: P15}
+      rows:
+        hand:
+          adjust:
+            shift: [thumb_dx, thumb_dy]
+        bottom: {row_net: P4}
+        home:   {row_net: P3}
+        top:    {row_net: P2}
+
+    thumb:
+      anchor:
+        ref: matrix_middle_hand
+        rotate: -(theta)
+      mirror:
+        ref: matrix_inner_bottom
+        distance: mirror_distance
+      key:
+        spread: U
+        row_net: P10
+      columns:
+        outer:  {key: {column_net: P16}}
+        center: {key: {column_net: P14}}
+        inner:  {key: {column_net: P15}}
+
+    palm:
+      anchor:
+        ref: matrix_pinky_hand
+        rotate: -(theta)
+      mirror:
+        ref: matrix_inner_bottom
+        distance: mirror_distance
+      key:
+        width: palm_width
+        tags: [palm]
+        column_net: P19
+        row_net: P18
+
+outlines:
+  board:
+    - what: polygon
+      fillet: board_fillet
+      points:
+        - {ref: matrix_inner_top,    shift: [board_half, board_half]}
+        - {ref: thumb_inner,         shift: [thumb_notch_board_dx, thumb_notch_board_dy]}
+        - {ref: thumb_inner,         shift: [board_half, thumb_notch_board_dy]}
+        - {ref: thumb_inner,         shift: [board_half, cap_half]}
+        - {ref: thumb_inner,         shift: [board_half, -board_half]}
+        - {ref: thumb_outer,         shift: [-board_half, -board_half]}
+        - {ref: palm,                shift: [palm_board_half, -board_half]}
+        - {ref: palm,                shift: [-palm_board_half, -board_half]}
+        - {ref: palm,                shift: [-palm_board_half, cap_half]}
+        - {ref: palm,                shift: [mcu_dx - mcu_length/2, cap_half]}
+        - {ref: palm,                shift: [mcu_dx - mcu_length/2, board_half + mcu_width + mcu_palm_gap]}
+        - {ref: palm,                shift: [-palm_board_half, board_half + mcu_width + mcu_palm_gap]}
+        - {ref: matrix_pinky_top,    shift: [-board_half, board_half]}
+  bottom_plate:
+    - what: polygon
+      fillet: case_fillet
+      points:
+        - {ref: matrix_inner_top,    shift: [case_half, case_half]}
+        - {ref: thumb_inner,         shift: [thumb_notch_case_dx, thumb_notch_case_dy]}
+        - {ref: thumb_inner,         shift: [case_half, thumb_notch_case_dy]}
+        - {ref: thumb_inner,         shift: [case_half, -case_half]}
+        - {ref: thumb_outer,         shift: [-case_half, -case_half]}
+        - {ref: palm,                shift: [palm_case_half, -case_half]}
+        - {ref: palm,                shift: [-palm_case_half, -case_half]}
+        - {ref: matrix_pinky_top,    shift: [-case_half, case_half]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: matrix_inner_top, shift: [case_half - screw_hole_inset, case_half - screw_hole_inset]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: matrix_pinky_top, shift: [screw_hole_inset - case_half, case_half - screw_hole_inset]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: matrix_middle_top, shift: [0, case_half - screw_hole_inset]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: thumb_inner, shift: [case_half - screw_hole_inset, screw_hole_inset - case_half]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: thumb_outer, shift: [screw_hole_inset - case_half, screw_hole_inset - case_half]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: palm, shift: [screw_hole_inset - palm_case_half, screw_hole_inset - case_half]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: palm, shift: [palm_case_half - screw_hole_inset, screw_hole_inset - case_half]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: palm, shift: [screw_hole_inset - palm_case_half, (-case_half + (-palm_dx - case_half) * sin_theta + (3U - palm_dy + case_half) * cos_theta) / 2]}
+    - what: circle
+      operation: subtract
+      radius: screw_hole_radius
+      where: {ref: thumb_inner, shift: [case_half - screw_hole_inset, thumb_notch_case_dy - screw_hole_inset]}
+  switch_cutouts:
+    - what: rectangle
+      where: [["-thumb_ref", "-/^mirror_/"]]
+      size: 14
+  top_plate:
+    - what: outline
+      name: bottom_plate
+    - what: outline
+      name: switch_cutouts
+      operation: subtract
+pcbs:
+  # NOTE: `asym` does NOT restrict a condition-style `where` to one half --
+  # ergogen evaluates those against every point, mirrors included (see
+  # filter.js). The `-/^mirror_/` name filter is what keeps this to one board.
+  # The points zone still mirrors, so the preview and outlines.right keep
+  # showing the whole keyboard.
+  cogent:
+    template: kicad8
+    outlines:
+      board: {outline: board}
+    footprints:
+      switches:
+        what: ceoloide/switch_mx
+        where: [["-palm", "-thumb_ref", "-/^mirror_/"]]
+        params:
+          reversible: true
+          to: "{{column_net}}"
+          from: "{{colrow}}"
+          include_keycap: true
+          hotswap: true
+      palm_switch:
+        what: ceoloide/switch_mx
+        where: [["palm", "-/^mirror_/"]]
+        params:
+          reversible: true
+          to: "{{column_net}}"
+          from: "{{colrow}}"
+          include_keycap: true
+          keycap_width: palm_cap_half * 2
+          hotswap: true
+      mcu:
+        what: ceoloide/mcu_nice_nano
+        where:
+          ref: palm
+          shift: [mcu_dx, mcu_dy]
+          rotate: 90
+        params:
+          reversible: true
+          # Jumpers only on the four rows firmware can't remap (RAW/P1, GND/P0,
+          # GND/RST, GND/VCC). Matrix pins get swapped per-half in firmware.
+          only_required_jumpers: true
+      trrs:
+        what: ceoloide/trrs_pj320a
+        where:
+          ref: thumb_inner
+          shift: [trrs_dx, trrs_dy]
+          rotate: 0
+        params:
+          reversible: true
+          symmetric: true   # drops R1, mirrors TP/R2/SL about the centreline
+          TP: VCC           # ceoloide's note: VCC on tip, GND on sleeve
+          R2: P21           # split data (Pro Micro D2)
+          SL: GND
+      diodes:
+        what: ceoloide/diode_tht_sod123
+        where: [["-thumb_ref", "-/^mirror_/"]]
+        adjust: {shift: [0, -4.7], rotate: 180}
+        params:
+          reversible: true
+          from: "{{colrow}}"
+          to: "{{row_net}}"
